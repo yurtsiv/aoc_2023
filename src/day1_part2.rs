@@ -24,10 +24,10 @@ lazy_static! {
 fn convert_token(token: &str) -> &str {
     match DIGIT_VALUES.get(token) {
         Some(val) => *val,
-        _ => token
+        _ => token,
     }
 }
-    
+
 fn number_from_line(line: &str) -> i32 {
     let mut digits: Vec<(usize, &str)> = TOKENS
         .iter()
