@@ -9,9 +9,9 @@ fn parse_block(block: &str) -> ChainBlock {
         if idx > 0 {
             let parts: Vec<_> = line.split(" ").collect();
             res.push((
-                parts.get(0).unwrap().parse().unwrap(),
-                parts.get(1).unwrap().parse().unwrap(),
-                parts.get(2).unwrap().parse().unwrap(),
+                parts[0].parse().unwrap(),
+                parts[1].parse().unwrap(),
+                parts[2].parse().unwrap(),
             ))
         }
     }
@@ -27,8 +27,8 @@ fn parse_seeds(line: &str) -> Vec<Range> {
         .chunks(2)
         .map(|chunk| {
             (
-                chunk.get(0).unwrap().parse().unwrap(),
-                chunk.get(1).unwrap().parse().unwrap(),
+                chunk[0].parse().unwrap(),
+                chunk[1].parse().unwrap(),
             )
         })
         .collect::<Vec<_>>()
@@ -105,14 +105,14 @@ fn seed_location_ranges((seed_start, seed_range): Range, chain: &Chain) -> Vec<R
         let mut new_source_ranges: Vec<Range> = vec![];
 
         for prev_source_range in prev_source_ranges {
-            let mut overlaps: Vec<Range> = vec![];
+            let mut source_overlaps: Vec<Range> = vec![];
 
             for (dest_start, source_start, span) in block {
                 let source_range = (*source_start, source_start + span - 1);
                 match range_overlap(prev_source_range, source_range) {
                     None => {}
                     Some(overlap) => {
-                        overlaps.push(overlap);
+                        source_overlaps.push(overlap);
                         let mapped_range = (
                             dest_start + overlap.0 - source_start,
                             dest_start + span - (source_start + span - overlap.1),
@@ -122,8 +122,8 @@ fn seed_location_ranges((seed_start, seed_range): Range, chain: &Chain) -> Vec<R
                 }
             }
 
-            if overlaps.len() > 0 {
-                let mut missing_parts = missing_range_parts(prev_source_range, &mut overlaps);
+            if source_overlaps.len() > 0 {
+                let mut missing_parts = missing_range_parts(prev_source_range, &mut source_overlaps);
                 new_source_ranges.append(&mut missing_parts);
             } else {
                 new_source_ranges.push(prev_source_range);

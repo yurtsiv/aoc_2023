@@ -8,9 +8,9 @@ fn parse_block(block: &str) -> ChainBlock {
         if idx > 0 {
             let parts: Vec<_> = line.split(" ").collect();
             res.push((
-                parts.get(0).unwrap().parse().unwrap(),
-                parts.get(1).unwrap().parse().unwrap(),
-                parts.get(2).unwrap().parse().unwrap(),
+                parts[0].parse().unwrap(),
+                parts[1].parse().unwrap(),
+                parts[2].parse().unwrap(),
             ))
         }
     }
@@ -46,18 +46,18 @@ fn parse_input(input: &str) -> (Vec<u32>, Chain) {
 }
 
 fn seed_location(seed: u32, chain: &Chain) -> u32 {
-    let mut current_source = seed;
+    let mut prev_source = seed;
 
     for block in chain {
-      for (dest_start, source_start, range) in block {
-          if current_source >= *source_start && current_source < *source_start + range {
-              current_source = dest_start + (current_source - *source_start);
-              break;
-          }
-      }
+        for (dest_start, source_start, span) in block {
+            if prev_source >= *source_start && prev_source < *source_start + span {
+                prev_source = dest_start + (prev_source - *source_start);
+                break;
+            }
+        }
     }
 
-    current_source
+    prev_source
 }
 
 pub fn solve(input: &str) -> u32 {
